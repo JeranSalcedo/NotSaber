@@ -18,7 +18,7 @@ const client = new Discord.Client({
 global.avalonState = {
   status: 0,
   questLeader: null,
-  playerListEmbed: null,
+  joinMessage: null,
   players: {}
 };
 
