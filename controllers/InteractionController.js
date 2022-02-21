@@ -10,7 +10,7 @@ class InteractionController {
 
         switch(buttonId){
           case 'join':  {
-            if(user.id in avalonState.players){
+            if(gameState.checkPlayerId(user.id)){
               interaction.reply({
                 content: 'You\'re already in the list dumbass.',
                 ephemeral: true
@@ -18,9 +18,7 @@ class InteractionController {
               break;
             }
 
-            avalonState.players[user.id] = {
-              name: `${user.username}#${user.discriminator}`
-            };
+            gameState.addPlayer(user.id, `${user.username}#${user.discriminator}`);
             interaction.reply({
               content: 'You joined the game.',
               ephemeral: true
@@ -28,9 +26,10 @@ class InteractionController {
             this.updateEmbed();
             break;
           }
-          case 'cancel':
-            if(user.id in avalonState.players){
-              delete avalonState.players[user.id];
+
+          case 'cancel': {
+            if(gameState.checkPlayerId(user.id)){
+              gameState.removePlayer(user.id);
               interaction.reply({
                 content: 'You left the game.',
                 ephemeral: true
@@ -43,13 +42,21 @@ class InteractionController {
               content: 'You\'re not even in the list idiot.',
               ephemeral: true
             });
+            break;
+          }
+
+          case 'checkRole':
+            interaction.reply({
+              content: `You've been assigned as ${gameState.getRole(user.id)}`,
+              ephemeral: true
+            });
         };
       }
       if(!interaction.isCommand()) return;
 
       switch(commandName){
         case 'slapnotsaber': {
-          if(avalonState.status != 0){
+          if(gameState.status != 0){
             interaction.reply({
                 content: '**A GAME IS ALREADY IN SESSION**',
                 ephemeral: true
@@ -58,10 +65,9 @@ class InteractionController {
             break;
           }
 
-          avalonState.players[user.id] = {
-            name: `${user.username}#${user.discriminator}`
-          };
-          avalonState.status = 1;
+          gameState.addPlayer(user.id, `${user.username}#${user.discriminator}`, true);
+          gameState.setStatus(1);
+          gameState.setChannel(interaction.member.guild.channels.cache.get(interaction.channelId));
           const embed = new MessageEmbed()
             .setColor('#099ff')
             .setTitle('Game Initialized')
@@ -90,10 +96,33 @@ class InteractionController {
           }).then(() => {
             interaction.fetchReply()
               .then(message => {
-                avalonState.joinMessage = message;
+                gameState.setJoinMessage(message);
               });
           }, error => {
             throw error;
+          });
+
+          break;
+        }
+
+        case `doubleslap`: {
+          if(user.id != gameState.getHostId()){
+            interaction.reply('The sheer audacity of this bitch smh\nWait for the host to decide when to start');
+          }
+///////////////ADD PLAYER COUNT RESTRICTIONS
+          const result = gameState.setStatus(2).then(() => {
+            const row = new MessageActionRow()
+            .addComponents(
+              new MessageButton()
+              .setCustomId('checkRole')
+              .setLabel('Check Role')
+              .setStyle('SUCCESS')
+            );
+            interaction.reply({
+              content: '**GAME START**',
+              components: [row]
+            });
+
           });
         }
       };
@@ -101,22 +130,18 @@ class InteractionController {
   }
 
   updateEmbed = () => {
-    let string = '';
-
-    Object.keys(avalonState.players).forEach(key => {
-      string += `${avalonState.players[key].name}\n`
-    });
+    const allPlayers = gameState.getAllPlayerNames();
 
     const embed = new MessageEmbed()
       .setColor('#099ff')
       .setTitle('Game Initialized')
       .setDescription('waiting for players')
       .addFields(
-        { name: 'Current number of players', value: `${Object.keys(avalonState.players).length}` },
-        { name: 'Players', value: string === ''? '--' : string }
+        { name: 'Current number of players', value: `${gameState.playersCount}` },
+        { name: 'Players', value: allPlayers === ''? '--' : allPlayers }
       );
 
-    avalonState.joinMessage.edit({ embeds: [embed] });
+    gameState.getJoinMessage().edit({ embeds: [embed] });
   }
 }
 
