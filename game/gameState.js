@@ -7,10 +7,13 @@ class gameState {
         2 - Strategy time
     */
     this.status = 0;
+    this.delaysCount = 0;
     this.channelId = null;
+    this.strategyTime = 20000;
     this.gameHost = null;
     this.questLeader = null;
     this.joinMessage = null;
+    this.questEmbed = null;
     this.playersCount = 0;
     this.players = {};
   }
@@ -28,7 +31,7 @@ class gameState {
   }
 
   getStatus = () => {
-    return status;
+    return this.status;
   }
 
   setChannel = (channel) => {
@@ -36,7 +39,10 @@ class gameState {
   }
 
   addPlayer = (id, name, host = false) => {
-    if(host) this.gameHost = id;
+    if(host){
+      this.gameHost = id;
+      this.questLeader = id;
+    }
 
     this.players[id] = { name: name };
     this.playersCount++;

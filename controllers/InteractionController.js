@@ -76,6 +76,7 @@ class InteractionController {
               { name: 'Current number of players', value: '1' },
               { name: 'Players', value: `${user.username}#${user.discriminator}` }
             );
+
           const row = new MessageActionRow()
             .addComponents(
               new MessageButton()
@@ -106,11 +107,19 @@ class InteractionController {
         }
 
         case `doubleslap`: {
+          if(gameState.getStatus() != 1){
+            interaction.reply('No one has even initiated the game yet...');
+            break;
+          }
+
           if(user.id != gameState.getHostId()){
             interaction.reply('The sheer audacity of this bitch smh\nWait for the host to decide when to start');
+            break;
           }
+
 ///////////////ADD PLAYER COUNT RESTRICTIONS
           const result = gameState.setStatus(2).then(() => {
+            this.updateEmbed();
             const row = new MessageActionRow()
             .addComponents(
               new MessageButton()
@@ -118,11 +127,11 @@ class InteractionController {
               .setLabel('Check Role')
               .setStyle('SUCCESS')
             );
+            gameState.getJoinMessage().edit({ components: [] });
             interaction.reply({
-              content: '**GAME START**',
+              content: `**GAME START**`,
               components: [row]
             });
-
           });
         }
       };
@@ -131,11 +140,25 @@ class InteractionController {
 
   updateEmbed = () => {
     const allPlayers = gameState.getAllPlayerNames();
-
+    let gameStatus = '';
+    let playerStatus = '';
+    switch(gameState.getStatus()){
+      case 1:
+        gameStatus = 'Game Initiated';
+        playerStatus = 'waiting for players';
+        break;
+      case 2:
+        gameStatus = 'Game Started';
+        playerStatus = 'players complete';
+        break;
+      default:
+        gameStatus = 'Game Ended';
+        playerStatus = 'screw off, scram';
+    }
     const embed = new MessageEmbed()
       .setColor('#099ff')
-      .setTitle('Game Initialized')
-      .setDescription('waiting for players')
+      .setTitle(gameStatus)
+      .setDescription(playerStatus)
       .addFields(
         { name: 'Current number of players', value: `${gameState.playersCount}` },
         { name: 'Players', value: allPlayers === ''? '--' : allPlayers }
