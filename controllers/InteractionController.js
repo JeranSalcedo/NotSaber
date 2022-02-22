@@ -18,7 +18,7 @@ class InteractionController {
               break;
             }
 
-            gameState.addPlayer(user.id, `${user.username}#${user.discriminator}`);
+            gameState.addPlayer(user.id, `${user.tag}`);
             interaction.reply({
               content: 'You joined the game.',
               ephemeral: true
@@ -65,7 +65,7 @@ class InteractionController {
             break;
           }
 
-          gameState.addPlayer(user.id, `${user.username}#${user.discriminator}`, true);
+          gameState.addPlayer(user.id, `${user.tag}`, true);
           gameState.setStatus(1);
           gameState.setChannel(interaction.member.guild.channels.cache.get(interaction.channelId));
           const embed = new MessageEmbed()
@@ -74,7 +74,7 @@ class InteractionController {
             .setDescription('waiting for players')
             .addFields(
               { name: 'Current number of players', value: '1' },
-              { name: 'Players', value: `${user.username}#${user.discriminator}` }
+              { name: 'Players', value: `${user.tag}` }
             );
 
           const row = new MessageActionRow()
