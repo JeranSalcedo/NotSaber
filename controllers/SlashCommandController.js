@@ -18,7 +18,16 @@ class SlashCommandController{
             ephemeral: true
         }
       };
-    };
+    }
+
+    if(channel.isThread()){
+      return {
+        update: false,
+        content: {
+          content: 'This is a thread channel you dolt.'
+        }
+      };
+    }
 
     const embed = new MessageEmbed()
       .setColor('#099ff')

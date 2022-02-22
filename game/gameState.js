@@ -15,6 +15,8 @@ class GameState {
     };
     this.delaysCount = 0;
     this.channel = null;
+    this.statusChannel = null;
+    this.discussionChannel = null;
     this.strategyTime = 10000;
     this.gameHost = null;
     this.questLeader = null;
@@ -44,6 +46,22 @@ class GameState {
     return this.channel;
   }
 
+  setStatusChannel = (channel) => {
+    this.statusChannel = channel;
+  }
+
+  getStatusChannel = () => {
+    return this.statusChannel;
+  }
+
+  setDiscussionChannel = (channel) => {
+    this.discussionChannel = channel;
+  }
+
+  getDiscussionChannel = () => {
+    return this.discussionChannel;
+  }
+
   addPlayer = (id, name, host = false) => {
     if(host){
       this.gameHost = id;
@@ -65,6 +83,10 @@ class GameState {
 
   getPlayerCount = () => {
     return this.playersCount;
+  }
+
+  getAllPlayerId = () => {
+    return Object.keys(this.players);
   }
 
   getAllPlayerNames = () => {

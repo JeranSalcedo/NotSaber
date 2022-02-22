@@ -10,11 +10,45 @@ class GameLoop {
   setStatusListener = () => {
     const waitGameStart = () => {
         if(gameState.getStatus() == 2){
-          return this.startStrategyTime();
+          return this.createRooms();
         }
         return setTimeout(waitGameStart, 250);
     }
     waitGameStart();
+  }
+
+  createRooms = () => {
+    const threadCreation = [];
+
+    threadCreation.push(this.createThread('game-status', true));
+    threadCreation.push(this.createThread('game-discussion'), false);
+
+    Promise.all(threadCreation).then(() => {
+      gameState.getAllPlayerId().forEach(key => {
+        this.client.users.fetch(key)
+          .then(player => {
+            gameState.getStatusChannel().members.add(player);
+            gameState.getDiscussionChannel().members.add(player);
+          })
+          .catch(console.error);
+      });
+
+      this.startStrategyTime();
+    });
+  }
+
+  createThread = async (name, isStatusChannel) => {
+    const threadChannel = await gameState.getChannel().threads.create({
+      name: name
+    });
+
+    if(isStatusChannel){
+      gameState.setStatusChannel(threadChannel);
+    } else{
+      gameState.setDiscussionChannel(threadChannel);
+    }
+
+    return Promise.resolve();
   }
 
   startStrategyTime = () => {
@@ -24,13 +58,13 @@ class GameLoop {
     const embed = new MessageEmbed()
       .setColor('#099ff')
       .setTitle('Strategy Time')
-      .addField('Time Remaining', `${timeRemaining / 1000} s`);
+      .addField('Time Remaining', `${timeRemaining / 1000} sec`);
 
     const updateEmbed = () => {
       const embed = new MessageEmbed()
         .setColor('#099ff')
         .setTitle('Strategy Time')
-        .addField('Time Remaining', `${timeRemaining / 1000} s`);
+        .addField('Time Remaining', `${timeRemaining / 1000} sec`);
       embedMessage.edit({ embeds: [embed] });
     }
 
@@ -48,9 +82,9 @@ class GameLoop {
       return setTimeout(waitTime, 250);
     }
 
-    gameState.getChannel().send({
+    gameState.getStatusChannel().send({
       embeds: [embed]
-    }).then((message) => {
+    }).then(message => {
       embedMessage = message;
       waitTime();
     }).catch(console.error);
@@ -58,7 +92,7 @@ class GameLoop {
 
   gameStart = () => {
     while(true){
-      
+
     }
   }
 }
