@@ -89,10 +89,7 @@ class SlashCommandController{
 
     return {
       update: true,
-      content: {
-        content: `**GAME START**`,
-        components: [row]
-      }
+      content: { components: [row] }
     };
   }
 }

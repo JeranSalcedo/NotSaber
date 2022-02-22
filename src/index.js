@@ -13,6 +13,8 @@ const client = new Client({
 });
 
 global.gameState = new GameState();
+const GameLoop = require(Path.join(__dirname, '..', 'game', 'gameLoop'));
+
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
