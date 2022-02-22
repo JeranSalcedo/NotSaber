@@ -16,7 +16,7 @@ class ButtonController{
   }
 
   addPlayer = (user) => {
-    if(gameState.checkPlayer(user.id)){
+    if(gameState.checkPlayerId(user.id)){
       return {
         update: false,
         content: {
