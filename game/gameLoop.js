@@ -1,4 +1,7 @@
 const { MessageActionRow, MessageEmbed, MessageButton } = require('discord.js');
+const Path = require('path');
+
+const GAME_CONSTANTS = require(Path.join(__dirname, 'gameConstants'));
 
 class GameLoop {
   constructor(client){
@@ -101,16 +104,38 @@ class GameLoop {
   }
 
   gameStart = () => {
-    const embed = new MessageEmbed()
+    const phases = [
+      'Party Selection', 'Voting', 'In Quest'
+    ];
+    let currentPhase = 0;
+    let phaseChange = false;
+
+    const loop = () => {
+      if(phaseChange){
+        phaseChange = false;
+      }
+      return setTimeout(loop, 250);
+    }
+
+
+    const beginRound = () => {
+      const questPartySize = GAME_CONSTANTS.playersCount[5].quests[gameState.getQuestNumber()].partySize;
+      const partyMembersText = '[open slot] '.repeat(questPartySize);
+      const embed = new MessageEmbed()
       .setColor('#099ff')
       .setTitle('GAME STATUS')
       .addFields(
-        { name: 'Round', value: '1' },
+        { name: 'Round', value: `${gameState.getRoundNumber()}` },
         { name: 'Leader', value: `${gameState.getQuestLeader()}`, inline: true },
-        { name: 'Quest', value: '1 / 5', inline: true },
-        { name: 'Players', value: `${gameState.getAllPlayers()}` }
+        { name: 'Quest', value: `${gameState.getQuestNumber()} / 5`, inline: true },
+        { name: 'Party Members', value: partyMembersText },
+        { name: 'Players', value: `${gameState.getAllPlayers()}` },
+        { name: 'Phase', value: `${phases[currentPhase]}` }
       );
-    this.embedMessage.edit({ embeds: [embed] });
+      this.embedMessage.edit({ embeds: [embed] });
+    };
+
+    beginRound();
   }
 }
 

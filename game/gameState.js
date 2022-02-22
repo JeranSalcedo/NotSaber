@@ -14,7 +14,6 @@ class GameState {
       Morgana: false,
       Oberon: false
     };
-    this.delaysCount = 0;
     this.channel = null;
     this.statusChannel = null;
     this.discussionChannel = null;
@@ -25,6 +24,10 @@ class GameState {
     this.questEmbed = null;
     this.playersCount = 0;
     this.players = {};
+
+    this.roundNumber = 1;
+    this.questNumber = 1;
+    this.delaysCount = 0;
   }
 
   setStatus = (number) => {
@@ -150,6 +153,22 @@ class GameState {
 
   getStrategyTime = () => {
     return this.strategyTime;
+  }
+
+  nextRound = () => {
+    this.roundNumber++;
+  }
+
+  getRoundNumber = () => {
+    return this.roundNumber;
+  }
+
+  nextQuest = () => {
+    this.questNumber++;
+  }
+
+  getQuestNumber = () => {
+    return this.questNumber;
   }
 }
 
