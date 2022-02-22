@@ -28,11 +28,7 @@ class GameState {
     this.status = number;
 
     if(this.status == 2){
-      return new Promise((resolve, reject) => {
-        this.assignRoles().then(() => {
-          resolve();
-        });
-      });
+      this.assignRoles();
     }
   }
 
@@ -89,15 +85,15 @@ class GameState {
     return this.gameHost;
   }
 
+  isHost = (id) => {
+    return id == this.gameHost;
+  }
+
   assignRoles = () => {
-    return new Promise((resolve, reject) => {
-      const shuffledPlayers = Object.keys(this.players).sort(() => Math.random - 0.5);
+    const shuffledPlayers = Object.keys(this.players).sort(() => Math.random - 0.5);
 
-      this.players[shuffledPlayers.pop()].role = 'Merlin';
-      // this.players[shuffledPlayers.pop()].role = 'Assassin';
-
-      resolve();
-    });
+    this.players[shuffledPlayers.pop()].role = 'Merlin';
+    // this.players[shuffledPlayers.pop()].role = 'Assassin';
   }
 
   getRole = (id) => {
