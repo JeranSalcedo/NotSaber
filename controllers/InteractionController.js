@@ -26,7 +26,11 @@ class InteractionController {
       if(response.update) this.updateEmbed();
       if(response.content.fetchReply){
         interaction.reply(response.content).then(message => {
-          gameState.setJoinMessage(message);
+          if(response.content.content === 'Delet this'){
+            interaction.deleteReply();
+          } else{
+            gameState.setJoinMessage(message);
+          }
         }, error => {
           throw error;
         }).catch(console.error);
@@ -39,7 +43,7 @@ class InteractionController {
   updateEmbed = () => {
     if(gameState.getJoinMessage() === null) return;
 
-    const allPlayers = gameState.getAllPlayerNames();
+    const allPlayers = gameState.getAllPlayers();
     let gameStatus = '';
     let playerStatus = '';
     switch(gameState.getStatus()){
@@ -61,7 +65,7 @@ class InteractionController {
       .setDescription(playerStatus)
       .addFields(
         { name: 'Current number of players', value: `${gameState.playersCount}` },
-        { name: 'Players', value: allPlayers === ''? '--' : allPlayers }
+        { name: 'Players', value: allPlayers.length === 0? '--' : `${allPlayers}` }
       );
 
     gameState.getJoinMessage().edit({ embeds: [embed] });

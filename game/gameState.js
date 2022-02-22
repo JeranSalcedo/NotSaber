@@ -5,6 +5,7 @@ class GameState {
         0 - Available
         1 - Waiting for players
         2 - Strategy time
+        3 - Party Selection
     */
     this.status = 0;
     this.extraRoles = {
@@ -62,19 +63,27 @@ class GameState {
     return this.discussionChannel;
   }
 
-  addPlayer = (id, name, host = false) => {
+  addPlayer = (user, host = false) => {
     if(host){
-      this.gameHost = id;
-      this.questLeader = id;
+      this.gameHost = user;
+      this.questLeader = user;
     }
 
-    this.players[id] = { name: name };
+    this.players[user.id] = { user: user };
     this.playersCount++;
   }
 
   removePlayer = (id) => {
     delete this.players[id];
     this.playersCount--;
+  }
+
+  setQuestLeader = (user) => {
+    this.questLeader = user;
+  }
+
+  getQuestLeader = () => {
+    return this.questLeader;
   }
 
   checkPlayerId = (id) => {
@@ -89,11 +98,24 @@ class GameState {
     return Object.keys(this.players);
   }
 
+  getAllPlayers = () => {
+    return Object.keys(this.players).map(key => this.players[key].user);
+  }
+
   getAllPlayerNames = () => {
     let string = '';
+    let interval = 3;
 
     Object.keys(this.players).forEach(key => {
-      string += `${this.players[key].name}\n`
+      string += `${this.players[key].user.username}`
+
+      if(interval <= 0){
+        string += ' ';
+        interval = 3;
+      } else {
+        string += '\n';
+        interval--;
+      }
     });
 
     return string;

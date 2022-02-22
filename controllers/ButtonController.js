@@ -1,7 +1,7 @@
 class ButtonController{
   buttonPressed = (type, user) => {
     switch(type){
-      case 'join': return this.addPlayer(user.id, user.tag);
+      case 'join': return this.addPlayer(user);
         break;
       case 'cancel': return this.removePlayer(user.id);
         break;
@@ -15,8 +15,8 @@ class ButtonController{
     }
   }
 
-  addPlayer = (id, name) => {
-    if(gameState.checkPlayerId(id)){
+  addPlayer = (user) => {
+    if(gameState.checkPlayer(user.id)){
       return {
         update: false,
         content: {
@@ -25,7 +25,7 @@ class ButtonController{
         }
       };
     } else {
-      gameState.addPlayer(id, name);
+      gameState.addPlayer(user);
       return {
         update: true,
         content: {

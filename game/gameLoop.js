@@ -1,4 +1,4 @@
-const { MessageEmbed } = require('discord.js');
+const { MessageActionRow, MessageEmbed, MessageButton } = require('discord.js');
 
 class GameLoop {
   constructor(client){
@@ -24,16 +24,16 @@ class GameLoop {
     threadCreation.push(this.createThread('game-discussion'), false);
 
     Promise.all(threadCreation).then(() => {
-      gameState.getAllPlayerId().forEach(key => {
-        this.client.users.fetch(key)
-          .then(player => {
-            gameState.getStatusChannel().members.add(player);
-            gameState.getDiscussionChannel().members.add(player);
-          })
-          .catch(console.error);
+      const membersAdd = [];
+
+      gameState.getAllPlayers().forEach(user => {
+        membersAdd.push(gameState.getStatusChannel().members.add(user));
+        membersAdd.push(gameState.getDiscussionChannel().members.add(user));
       });
 
-      this.startStrategyTime();
+      Promise.all(membersAdd).then(() => {
+        this.startStrategyTime();
+      });
     });
   }
 
@@ -52,30 +52,39 @@ class GameLoop {
   }
 
   startStrategyTime = () => {
-    let embedMessage = null;
+    this.embedMessage = null;
     let interval = 4;
     let timeRemaining = gameState.getStrategyTime();
     const embed = new MessageEmbed()
       .setColor('#099ff')
       .setTitle('Strategy Time')
       .addField('Time Remaining', `${timeRemaining / 1000} sec`);
+    const row = new MessageActionRow()
+      .addComponents(
+        new MessageButton()
+        .setCustomId('checkRole')
+        .setLabel('Check Role')
+        .setStyle('SUCCESS')
+        );
 
-    const updateEmbed = () => {
+    const updateEmbed = (text) => {
       const embed = new MessageEmbed()
         .setColor('#099ff')
         .setTitle('Strategy Time')
-        .addField('Time Remaining', `${timeRemaining / 1000} sec`);
-      embedMessage.edit({ embeds: [embed] });
+        .addField('Time Remaining', text);
+      this.embedMessage.edit({ embeds: [embed] });
     }
 
     const waitTime = () => {
       if(timeRemaining <= 0){
-        return this.gameStart();
+        gameState.setStatus(3);
+        updateEmbed('Time\'s up!');
+        return setTimeout(this.gameStart, 2000);
       }
       timeRemaining -= 250;
       if(interval == 0){
         interval = 4;
-        updateEmbed();
+        updateEmbed(`${timeRemaining / 1000} sec`);
       } else{
         interval--;
       }
@@ -83,17 +92,25 @@ class GameLoop {
     }
 
     gameState.getStatusChannel().send({
-      embeds: [embed]
+      embeds: [embed],
+      components: [row]
     }).then(message => {
-      embedMessage = message;
-      waitTime();
+      this.embedMessage = message;
+      setTimeout(waitTime, 250);
     }).catch(console.error);
   }
 
   gameStart = () => {
-    while(true){
-
-    }
+    const embed = new MessageEmbed()
+      .setColor('#099ff')
+      .setTitle('GAME STATUS')
+      .addFields(
+        { name: 'Round', value: '1' },
+        { name: 'Leader', value: `${gameState.getQuestLeader()}`, inline: true },
+        { name: 'Quest', value: '1 / 5', inline: true },
+        { name: 'Players', value: `${gameState.getAllPlayers()}` }
+      );
+    this.embedMessage.edit({ embeds: [embed] });
   }
 }
 

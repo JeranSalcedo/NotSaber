@@ -35,7 +35,7 @@ class SlashCommandController{
       .setDescription('waiting for players')
       .addFields(
         { name: 'Current number of players', value: '1' },
-        { name: 'Players', value: `${user.tag}` }
+        { name: 'Players', value: `${user}` }
       );
 
     const row = new MessageActionRow()
@@ -52,7 +52,7 @@ class SlashCommandController{
             .setStyle('DANGER')
       );
 
-    gameState.addPlayer(user.id, `${user.tag}`, true);
+    gameState.addPlayer(user, true);
     gameState.setStatus(1);
     gameState.setChannel(channel);
 
@@ -88,17 +88,13 @@ class SlashCommandController{
 ///////////////ADD PLAYER COUNT RESTRICTIONS
     gameState.setStatus(2);
     gameState.getJoinMessage().edit({ components: [] });
-    const row = new MessageActionRow()
-    .addComponents(
-      new MessageButton()
-      .setCustomId('checkRole')
-      .setLabel('Check Role')
-      .setStyle('SUCCESS')
-      );
 
     return {
       update: true,
-      content: { components: [row] }
+      content: {
+        content: 'Delet this',
+        fetchReply: true
+      }
     };
   }
 }
