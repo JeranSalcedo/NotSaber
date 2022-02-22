@@ -3,24 +3,35 @@ const Path = require('path');
 
 const ButtonController = require(Path.join(__dirname, 'ButtonController'));
 const SlashCommandController = require(Path.join(__dirname, 'SlashCommandController'));
+const SelectMenuController = require(Path.join(__dirname, 'SelectMenuController'));
 
 class InteractionController {
   constructor(client) {
     this.buttonController = new ButtonController();
     this.slashCommandController = new SlashCommandController();
+    this.selectMenuController = new SelectMenuController();
 
     client.on('interactionCreate', (interaction) => {
-      const { commandName, options, user } = interaction;
+      const { commandName, options, member } = interaction;
       let response = { update: false, content: {} };
+
+      if(interaction.isSelectMenu()){
+        const command = interaction.customId;
+        const value = interaction.values[0];
+        response = this.selectMenuController.optionSelected(command, value);
+
+        interaction.update(response);
+        return;
+      }
 
       if(interaction.isButton()){
         const type = interaction.customId;
-        response = this.buttonController.buttonPressed(type, user);
+        response = this.buttonController.buttonPressed(type, member);
       }
 
       if(interaction.isCommand()){
         const channel = interaction.member.guild.channels.cache.get(interaction.channelId)
-        response = this.slashCommandController.commandIssued(commandName, user, channel);
+        response = this.slashCommandController.commandIssued(commandName, member, channel);
       }
 
       if(response.update) this.updateEmbed();
@@ -43,7 +54,7 @@ class InteractionController {
   updateEmbed = () => {
     if(gameState.getJoinMessage() === null) return;
 
-    const allPlayers = gameState.getAllPlayers();
+    const allPlayers = gameState.getAllPlayers().map(player => player.user);
     let gameStatus = '';
     let playerStatus = '';
     switch(gameState.getStatus()){

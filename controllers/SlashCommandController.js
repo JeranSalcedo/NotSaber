@@ -1,15 +1,17 @@
-const { MessageActionRow, MessageEmbed, MessageButton } = require('discord.js');
+const { MessageActionRow, MessageEmbed, MessageButton, MessageSelectMenu } = require('discord.js');
 
 class SlashCommandController{
-  commandIssued = (command, user, channel) => {
+  commandIssued = (command, member, channel) => {
     switch(command){
-      case 'slapnotsaber': return this.initiateGame(command, user, channel);
+      case 'slapnotsaber': return this.initiateGame(command, member, channel);
         break;
-      case 'doubleslap': return this.startGame(user.id);
+      case 'doubleslap': return this.startGame(member.user.id);
+        break;
+      case 'enlist': return this.createMenu();
     }
   }
 
-  initiateGame = (command, user, channel) => {
+  initiateGame = (command, member, channel) => {
     if(gameState.getStatus() != 0){
       return {
         update: false,
@@ -35,7 +37,7 @@ class SlashCommandController{
       .setDescription('waiting for players')
       .addFields(
         { name: 'Current number of players', value: '1' },
-        { name: 'Players', value: `${user}` }
+        { name: 'Players', value: `${member.user}` }
       );
 
     const row = new MessageActionRow()
@@ -52,7 +54,7 @@ class SlashCommandController{
             .setStyle('DANGER')
       );
 
-    gameState.addPlayer(user, true);
+    gameState.addPlayer(member, true);
     gameState.setStatus(1);
     gameState.setChannel(channel);
 
@@ -94,6 +96,28 @@ class SlashCommandController{
       content: {
         content: 'Delet this',
         fetchReply: true
+      }
+    };
+  }
+
+  createMenu = () => {
+    const options = gameState.getAllPlayers().map((player, index) => ({
+      label: player.nickname,
+      description: player.user.tag,
+      value: player.user.id
+    }));
+    const row = new MessageActionRow()
+      .addComponents(
+        new MessageSelectMenu()
+          .setCustomId('enlist')
+          .addOptions(options)
+      );
+
+    return {
+      update: false,
+      content: {
+        components: [row],
+        ephemeral: true
       }
     };
   }

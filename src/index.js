@@ -15,6 +15,15 @@ const client = new Client({
 
 global.gameState = new GameState();
 client.on('ready', () => {
+  gameState.setGuild(client.guilds.fetch(process.env.GUILD_ID));
+
+  client.guilds.fetch(process.env.GUILD_ID).then(guild => {
+    guild.commands.create({
+      name: 'enlist',
+      description: 'Send forth an unfortunate soul towards their demise.'
+    });
+  });
+
   console.log(`Logged in as ${client.user.tag}!`);
 });
 

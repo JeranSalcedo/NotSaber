@@ -14,6 +14,7 @@ class GameState {
       Morgana: false,
       Oberon: false
     };
+    this.guild = null;
     this.channel = null;
     this.statusChannel = null;
     this.discussionChannel = null;
@@ -42,6 +43,14 @@ class GameState {
     return this.status;
   }
 
+  setGuild = (guild) => {
+    this.guild = guild;
+  }
+
+  getGuild = () => {
+    return this.guild;
+  }
+
   setChannel = (channel) => {
     this.channel = channel;
   }
@@ -66,13 +75,16 @@ class GameState {
     return this.discussionChannel;
   }
 
-  addPlayer = (user, host = false) => {
+  addPlayer = (member, host = false) => {
     if(host){
-      this.gameHost = user;
-      this.questLeader = user;
+      this.gameHost = member.user;
+      this.questLeader = member.user;
     }
 
-    this.players[user.id] = { user: user };
+    this.players[member.user.id] = {
+      nickname: member.nickname,
+      user: member.user
+    };
     this.playersCount++;
   }
 
@@ -102,26 +114,14 @@ class GameState {
   }
 
   getAllPlayers = () => {
-    return Object.keys(this.players).map(key => this.players[key].user);
+    return Object.keys(this.players).map(key => ({
+      nickname: this.players[key].nickname,
+      user: this.players[key].user
+    }));
   }
 
   getAllPlayerNames = () => {
-    let string = '';
-    let interval = 3;
-
-    Object.keys(this.players).forEach(key => {
-      string += `${this.players[key].user.username}`
-
-      if(interval <= 0){
-        string += ' ';
-        interval = 3;
-      } else {
-        string += '\n';
-        interval--;
-      }
-    });
-
-    return string;
+    return Object.keys(this.players).map(key => this.players[key].user.username);
   }
 
   setJoinMessage = (message) => {

@@ -104,6 +104,9 @@ class GameLoop {
   }
 
   gameStart = () => {
+
+
+
     const phases = [
       'Party Selection', 'Voting', 'In Quest'
     ];
@@ -129,7 +132,7 @@ class GameLoop {
         { name: 'Leader', value: `${gameState.getQuestLeader()}`, inline: true },
         { name: 'Quest', value: `${gameState.getQuestNumber()} / 5`, inline: true },
         { name: 'Party Members', value: partyMembersText },
-        { name: 'Players', value: `${gameState.getAllPlayers()}` },
+        { name: 'Players', value: `${gameState.getAllPlayers().map(player => player.user)}` },
         { name: 'Phase', value: `${phases[currentPhase]}` }
       );
       this.embedMessage.edit({ embeds: [embed] });

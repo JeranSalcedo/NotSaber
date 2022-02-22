@@ -1,22 +1,22 @@
 class ButtonController{
-  buttonPressed = (type, user) => {
+  buttonPressed = (type, member) => {
     switch(type){
-      case 'join': return this.addPlayer(user);
+      case 'join': return this.addPlayer(member);
         break;
-      case 'cancel': return this.removePlayer(user.id);
+      case 'cancel': return this.removePlayer(member.user.id);
         break;
       case 'checkRole': return {
         update: false,
         content: {
-          content: `You've been assigned as ${gameState.getRole(user.id)}`,
+          content: `You've been assigned as ${gameState.getRole(member.user.id)}`,
           ephemeral: true
         }
       }
     }
   }
 
-  addPlayer = (user) => {
-    if(gameState.checkPlayerId(user.id)){
+  addPlayer = (member) => {
+    if(gameState.checkPlayerId(member.user.id)){
       return {
         update: false,
         content: {
@@ -25,7 +25,7 @@ class ButtonController{
         }
       };
     } else {
-      gameState.addPlayer(user);
+      gameState.addPlayer(member);
       return {
         update: true,
         content: {
