@@ -13,7 +13,6 @@ class SlashCommandController{
     if(gameState.getStatus() != 0){
       return {
         update: false,
-        track: false,
         content: {
             content: '**A GAME IS ALREADY IN SESSION**',
             ephemeral: true
@@ -50,10 +49,10 @@ class SlashCommandController{
 
     return {
       update: false,
-      track: true,
       content: {
         embeds: [embed],
-        components: [row]
+        components: [row],
+        fetchReply: true
       }
     };
   }
@@ -62,7 +61,6 @@ class SlashCommandController{
     if(gameState.getStatus() != 1){
       return {
         update: false,
-        track: false,
         content: {
           content: 'No one has even initiated the game yet...'
         }
@@ -72,7 +70,6 @@ class SlashCommandController{
     if(!gameState.isHost(id)){
       return {
         update: false,
-        track: false,
         content: {
           content: 'The sheer audacity of this bitch smh\nWait for the host to decide when to start'
         }
@@ -92,7 +89,6 @@ class SlashCommandController{
 
     return {
       update: true,
-      track: false,
       content: {
         content: `**GAME START**`,
         components: [row]

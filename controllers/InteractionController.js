@@ -24,15 +24,12 @@ class InteractionController {
       }
 
       if(response.update) this.updateEmbed();
-      if(response.track){
-        interaction.reply(response.content).then(() => {
-          interaction.fetchReply()
-          .then(message => {
-            gameState.setJoinMessage(message);
-          });
+      if(response.content.fetchReply){
+        interaction.reply(response.content).then(message => {
+          gameState.setJoinMessage(message);
         }, error => {
           throw error;
-        });
+        }).catch(console.error);
       } else {
         interaction.reply(response.content);
       }
