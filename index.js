@@ -1,6 +1,7 @@
+require('dotenv').config();
+
 const Discord = require('discord.js');
 const Path = require('path');
-const Config = require('./config');
 
 const GameState = require(Path.join(__dirname, 'game', 'gameState'));
 
@@ -17,7 +18,7 @@ global.gameState = new GameState();
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
 
-  const guild = client.guilds.cache.get(Config.guild_id);
+  const guild = client.guilds.cache.get(process.env.GUILD_ID);
   // guild.commands.set([])
   guild.commands.create({
     name: 'slapnotsaber',
@@ -44,4 +45,4 @@ client.on('ready', () => {
 new MessageController(client);
 new InteractionController(client);
 
-client.login(Config.token);
+client.login(process.env.DISCORD_BOT_TOKEN);
