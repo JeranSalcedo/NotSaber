@@ -7,6 +7,12 @@ class gameState {
         2 - Strategy time
     */
     this.status = 0;
+    this.extraRoles = {
+      Percival: false,
+      Mordred: false,
+      Morgana: false,
+      Oberon: false
+    };
     this.delaysCount = 0;
     this.channelId = null;
     this.strategyTime = 20000;

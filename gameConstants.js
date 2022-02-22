@@ -164,7 +164,27 @@ const GAME_CONSTANTS = {
     },
     Assassin: {
       alignment: 'evil',
+      minion: true,
       required: true
+    },
+    Percival: {
+      alignment: 'good',
+      required: false
+    },
+    Mordred: {
+      alignment: 'evil',
+      minion: true,
+      required: false
+    },
+    Morgana: {
+      alignment: 'evil',
+      minion: true,
+      required: false
+    },
+    Oberon: {
+      alignment: 'evil',
+      minion: false,
+      required: false
     }
   }
 }
