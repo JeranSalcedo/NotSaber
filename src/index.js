@@ -5,6 +5,7 @@ const Path = require('path');
 
 const Commands = require(Path.join(__dirname, 'commands'));
 const GameState = require(Path.join(__dirname, '..', 'game', 'gameState'));
+const GameLoop = require(Path.join(__dirname, '..', 'game', 'gameLoop'));
 
 const InteractionController = require(Path.join(__dirname, '..', 'controllers', 'InteractionController'));
 
@@ -13,12 +14,11 @@ const client = new Client({
 });
 
 global.gameState = new GameState();
-const GameLoop = require(Path.join(__dirname, '..', 'game', 'gameLoop'));
-
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
 
+new GameLoop(client);
 new InteractionController(client);
 
 client.login(process.env.DISCORD_BOT_TOKEN);

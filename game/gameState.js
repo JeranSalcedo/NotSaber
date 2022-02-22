@@ -14,8 +14,8 @@ class GameState {
       Oberon: false
     };
     this.delaysCount = 0;
-    this.channelId = null;
-    this.strategyTime = 20000;
+    this.channel = null;
+    this.strategyTime = 10000;
     this.gameHost = null;
     this.questLeader = null;
     this.joinMessage = null;
@@ -38,6 +38,10 @@ class GameState {
 
   setChannel = (channel) => {
     this.channel = channel;
+  }
+
+  getChannel = () => {
+    return this.channel;
   }
 
   addPlayer = (id, name, host = false) => {
@@ -98,6 +102,10 @@ class GameState {
 
   getRole = (id) => {
     return this.players[id].role;
+  }
+
+  getStrategyTime = () => {
+    return this.strategyTime;
   }
 }
 
