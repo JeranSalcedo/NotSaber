@@ -1,4 +1,4 @@
-class gameState {
+class GameState {
   constructor(){
     /*
       Status:
@@ -105,4 +105,4 @@ class gameState {
   }
 }
 
-module.exports = gameState;
+module.exports = GameState;

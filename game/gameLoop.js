@@ -1,5 +1,5 @@
-class gameLoop {
+class GameLoop {
 
 }
 
-module.exports = gameLoop;
+module.exports = GameLoop;
