@@ -6,10 +6,12 @@ class SelectMenuController {
   }
 
   enlistPlayer = (id) => {
-    //////enlist player
+    gameState.addPartyMember(id);
+
+    const player = gameState.getPlayer(id);
 
     return {
-      content: ` got conscripted.`,
+      content: `${player.nickname} got conscripted.`,
       components: []
     };
   }

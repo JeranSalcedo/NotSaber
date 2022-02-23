@@ -4,8 +4,9 @@ class GameState {
       Status:
         0 - Available
         1 - Waiting for players
-        2 - Strategy time
-        3 - Party Selection
+        2 - Strategy time start
+        3 - Strategy time
+        4 - Party Selection
     */
     this.status = 0;
     this.extraRoles = {
@@ -29,6 +30,8 @@ class GameState {
     this.roundNumber = 1;
     this.questNumber = 1;
     this.delaysCount = 0;
+
+    this.partyMembers = [];
   }
 
   setStatus = (number) => {
@@ -105,6 +108,10 @@ class GameState {
     return id in this.players;
   }
 
+  getPlayer = (id) => {
+    return this.players[id];
+  }
+
   getPlayerCount = () => {
     return this.playersCount;
   }
@@ -118,6 +125,14 @@ class GameState {
       nickname: this.players[key].nickname,
       user: this.players[key].user
     }));
+  }
+
+  addPartyMember = (id) => {
+    this.partyMembers.push(id);
+  }
+
+  getPartyMembers = () => {
+    return this.partyMembers;
   }
 
   getAllPlayerNames = () => {

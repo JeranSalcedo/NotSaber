@@ -14,6 +14,7 @@ const client = new Client({
 });
 
 global.gameState = new GameState();
+global.GAME_CONSTANTS = require(Path.join(__dirname, '..', 'game', 'gameConstants'));
 client.on('ready', () => {
   gameState.setGuild(client.guilds.fetch(process.env.GUILD_ID));
 
